@@ -1,22 +1,30 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IFolderSchema } from "../types/interface";
+import { IEditProps, ISchema } from "@data/types/interface";
 
 export const FolderSlice = createSlice({
   name: "folderReducer",
   initialState: {
-    id: "init",
-    schema: [] as IFolderSchema[],
+    schema: [] as ISchema[],
   },
   reducers: {
-    initFolder(
-      state,
-      action: PayloadAction<{ id: string; schema: IFolderSchema[] }>
-    ) {
-      state.id = action.payload.id;
-      state.schema = action.payload.schema;
+    init(state, actions: PayloadAction<ISchema[]>) {
+      state.schema = actions.payload;
     },
-    setFolderId(state, action: PayloadAction<string>) {
-      state.id = action.payload;
+    create(state, actions: PayloadAction<ISchema>) {
+      state.schema = [...state.schema, actions.payload];
+    },
+    rename(state, actions: PayloadAction<IEditProps>) {
+      const { id, name } = actions.payload;
+      const newState = state.schema.map((item) => {
+        if (item.id === id) item.name = name;
+        return item;
+      });
+      state.schema = newState;
+    },
+    delete(state, actions: PayloadAction<{ id: string }>) {
+      const id = actions.payload.id;
+      const newState = state.schema.filter((item) => item.id !== id);
+      state.schema = newState;
     },
   },
 });
@@ -26,7 +34,6 @@ type TFolderState = {
 };
 
 export const folderSelector = {
-  id: (state: TFolderState) => state?.[FolderSlice.name]?.id,
   schema: (state: TFolderState) => state?.[FolderSlice.name]?.schema,
 };
 

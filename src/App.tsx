@@ -1,25 +1,15 @@
 import { useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import redux from "./data/redux";
-import { useSelector } from "react-redux";
-import { folderSelector } from "./data/slice/folderSlice";
+import useFileSchema from "./hook/useFileSchema";
 
 function App() {
-  const folderId = useSelector(folderSelector.id);
+  const { initSchema } = useFileSchema();
 
   useEffect(() => {
     // init folder
-    redux.initFolder({ id: "", schema: [] });
+    initSchema();
   }, []);
-
-  useEffect(() => {
-    console.log("folderId changed === ", folderId);
-  }, [folderId]);
-
-  const handleOnClick = () => {
-    redux.setFolderId("AAAA");
-  };
 
   return (
     <div className="App">
@@ -28,7 +18,6 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <button onClick={handleOnClick}>Click me</button>
         <a
           className="App-link"
           href="https://reactjs.org"
