@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IEditProps, ISchema } from "@data/types/interface";
 import store from "store2";
+import clearNoParentItem from "../../utils/clearNoParentItem";
 
 export const FolderSlice = createSlice({
   name: "folderReducer",
@@ -14,6 +15,7 @@ export const FolderSlice = createSlice({
     },
     create(state, actions: PayloadAction<ISchema>) {
       state.schema = [...state.schema, actions.payload];
+      store.set("resource_schema", state.schema);
     },
     rename(state, actions: PayloadAction<IEditProps>) {
       const { id, name } = actions.payload;
@@ -25,8 +27,8 @@ export const FolderSlice = createSlice({
       store.set("resource_schema", newState);
     },
     delete(state, actions: PayloadAction<{ id: string }>) {
-      const id = actions.payload.id;
-      const newState = state.schema.filter((item) => item.id !== id);
+      const newState = clearNoParentItem(state.schema, actions.payload.id);
+
       state.schema = newState;
       store.set("resource_schema", newState);
     },

@@ -1,16 +1,9 @@
 import { useState } from "react";
 import { ITreeSchema } from "../data/types/interface";
 import size from "lodash/size";
+import redux from "../data/redux";
 
-const MenuItem = ({
-  item,
-  onClick,
-  onContextMenu,
-}: {
-  item: ITreeSchema;
-  onClick?(item: ITreeSchema): void;
-  onContextMenu?(item: ITreeSchema): void;
-}) => {
+const MenuItem = ({ item }: { item: ITreeSchema }) => {
   const [isExpand, setIsExpane] = useState(true);
   const filename = `${item.name}`;
   const expandable = size(item?.children);
@@ -19,14 +12,15 @@ const MenuItem = ({
     e.preventDefault();
     expandable && setIsExpane((prev) => !prev);
 
-    // TODO: show file context on the right side
-    onClick && onClick(item);
+    redux.setCurrentSchema(item);
   };
+
   const handleOnContextMenu = (e: React.MouseEvent, item: ITreeSchema) => {
     e.preventDefault();
 
-    // TODO: show operation tool box
-    onContextMenu && onContextMenu(item);
+    const position = { x: e.clientX, y: e.clientY };
+
+    redux.setRightClickSchema({ schema: item, position });
   };
   return (
     <div className="text-left pl-2 divide-y w-full cursor-pointer">

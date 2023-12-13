@@ -3,8 +3,11 @@ import logo from "./logo.svg";
 import "./App.css";
 import useFileSchema from "./hook/useFileSchema";
 import MenuPanel from "./partial/MenuPanel";
+import { useSelector } from "react-redux";
+import { controlSelector } from "./data/slice/controlSlice";
 
 function App() {
+  const currentSchema = useSelector(controlSelector.currentShema);
   const { initSchema } = useFileSchema();
 
   useEffect(() => {
@@ -22,7 +25,7 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <div className="border p-8">HHHH</div>
+        <div className="border p-8">{JSON.stringify(currentSchema.name)}</div>
         <a
           className="App-link"
           href="https://reactjs.org"

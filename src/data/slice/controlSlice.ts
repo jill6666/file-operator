@@ -1,20 +1,27 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ISchema } from "@data/types/interface";
-import store from "store2";
+import { ITreeSchema } from "@data/types/interface";
 
 export const ControlSlice = createSlice({
   name: "controlReducer",
   initialState: {
-    currentId: "",
-    currentShema: {} as ISchema,
+    currentShema: {} as ITreeSchema,
+    rightClickSchema: {} as {
+      schema: ITreeSchema;
+      position: { x: string; y: string };
+    },
   },
   reducers: {
-    setCurrentSchema(
+    setCurrentSchema(state, actions: PayloadAction<ITreeSchema>) {
+      state.currentShema = actions.payload;
+    },
+    setRightClickSchema(
       state,
-      actions: PayloadAction<{ id: string; currentShema: ISchema }>
+      actions: PayloadAction<{
+        schema: ITreeSchema;
+        position: { x: string; y: string };
+      }>
     ) {
-      state.currentId = actions.payload.id;
-      state.currentShema = actions.payload.currentShema;
+      state.rightClickSchema = actions.payload;
     },
   },
 });
@@ -24,9 +31,10 @@ type TControlState = {
 };
 
 export const controlSelector = {
-  currentId: (state: TControlState) => state?.[ControlSlice.name]?.currentId,
   currentShema: (state: TControlState) =>
     state?.[ControlSlice.name]?.currentShema,
+  rightClickSchema: (state: TControlState) =>
+    state?.[ControlSlice.name]?.rightClickSchema,
 };
 
 export const controlActions = ControlSlice.actions;

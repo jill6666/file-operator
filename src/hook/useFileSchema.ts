@@ -7,6 +7,7 @@ import getFileExtension from "../utils/getFileExtension";
 import { v4 as uuidv4 } from "uuid";
 import { BROWSER_VISIBLE_EXTENSIONS } from "../constants";
 import store from "store2";
+import { mockFolderData } from "../data/mock";
 
 const useFileSchema = () => {
   const schema = useSelector(folderSelector.schema);
@@ -17,7 +18,7 @@ const useFileSchema = () => {
     if (localStorageData) return redux.init(localStorageData);
 
     const id = uuidv4();
-    const initData = [{ id, name: "App", parentId: null }];
+    const initData = mockFolderData || [{ id, name: "App", parentId: null }];
     redux.init(initData);
   };
 
@@ -45,7 +46,7 @@ const useFileSchema = () => {
 
   const deleteResource = ({ id }: { id: string }) => {
     const hasResource = schema.findIndex((item) => item.id === id) !== -1;
-    if (hasResource) return redux.delete(id);
+    if (hasResource) return redux.delete({ id });
 
     console.error("Delete error, no such id in resource.");
   };
