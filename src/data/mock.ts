@@ -1,7 +1,7 @@
 import { ITreeSchema } from "@data/types/interface";
 
 export const mockFolderData = [
-  { id: "root", parentId: null, name: "root" },
+  { id: "root", parentId: null, name: "App" },
   { id: "1", parentId: "root", name: "1" },
   { id: "2", parentId: "root", name: "2" },
   {
@@ -39,7 +39,7 @@ export const mockFolderData = [
 
 export const mockMapTreeData: ITreeSchema = {
   id: "root",
-  name: "root",
+  name: "App",
   parentId: null,
   children: [
     {

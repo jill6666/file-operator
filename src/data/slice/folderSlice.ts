@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IEditProps, ISchema } from "@data/types/interface";
+import store from "store2";
 
 export const FolderSlice = createSlice({
   name: "folderReducer",
@@ -9,6 +10,7 @@ export const FolderSlice = createSlice({
   reducers: {
     init(state, actions: PayloadAction<ISchema[]>) {
       state.schema = actions.payload;
+      store.set("resource_schema", actions.payload);
     },
     create(state, actions: PayloadAction<ISchema>) {
       state.schema = [...state.schema, actions.payload];
@@ -20,11 +22,13 @@ export const FolderSlice = createSlice({
         return item;
       });
       state.schema = newState;
+      store.set("resource_schema", newState);
     },
     delete(state, actions: PayloadAction<{ id: string }>) {
       const id = actions.payload.id;
       const newState = state.schema.filter((item) => item.id !== id);
       state.schema = newState;
+      store.set("resource_schema", newState);
     },
   },
 });

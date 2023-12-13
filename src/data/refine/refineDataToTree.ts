@@ -93,12 +93,13 @@ const mockMapTreeData: ITreeSchema = {
  * @param data
  * @returns
  */
-function refineDataToTree(data: ISchema[]): ITreeSchema {
+function refineDataToTree(data: ISchema[]): ITreeSchema[] {
   const map = new Map();
 
   // Create a map to efficiently look up items by their id
   data.forEach((item) => {
-    map.set(item.id, { ...item, children: [] });
+    if (item.parentId === null) map.set(item.id, { ...item, children: [] });
+    else map.set(item.id, { ...item });
   });
 
   // Build the tree structure
@@ -109,9 +110,10 @@ function refineDataToTree(data: ISchema[]): ITreeSchema {
       tree.push(item);
     } else {
       const parent = map.get(item.parentId);
-      if (parent) {
-        parent.children.push(item);
-      }
+      if (!parent) return;
+
+      const children = parent?.children;
+      parent["children"] = children ? [...children, item] : [item];
     }
   });
 
