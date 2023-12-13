@@ -1,7 +1,6 @@
 import { ITreeSchema } from "../data/types/interface";
 import { ACTIONS } from "../data/types/enum";
-import size from "lodash/size";
-import { FOLDER_ACTIONS, FILE_ACTIONS } from "../constants";
+import getMenuOptions from "../utils/getMenuOptions";
 
 const ToolBox = ({
   schema,
@@ -12,8 +11,7 @@ const ToolBox = ({
   onClose?(): void;
   onClick?(type: ACTIONS): void;
 }) => {
-  const isFolder = size(schema?.children);
-  const data = isFolder ? FOLDER_ACTIONS : FILE_ACTIONS;
+  const options = (schema && getMenuOptions(schema)) || [];
 
   const handleOnClose = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -34,7 +32,7 @@ const ToolBox = ({
         x
       </div>
       <div className="flex flex-col p-2 rounded-sm space-y-2 divide-y bg-white p-2 border">
-        {data.map((item) => (
+        {options.map((item) => (
           <div
             key={item.value}
             className="cursor-pointer"

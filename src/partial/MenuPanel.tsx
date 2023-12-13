@@ -21,7 +21,7 @@ const MenuPanel = () => {
   const handleOnClick = (type: ACTIONS) => {
     redux.setRightClickSchema({});
 
-    // TODO: add input for CreateFile and CreateFolder
+    // TODO: each case's function except delete
     switch (type) {
       case ACTIONS.CreateFile:
         createResource({ filename: "0000", parentId: id, type: "file" });
@@ -29,11 +29,13 @@ const MenuPanel = () => {
       case ACTIONS.CreateFolder:
         createResource({ filename: "0000", parentId: id, type: "folder" });
         break;
+      case ACTIONS.Edit:
+        renameResource({ id, name: "Jill Baby" });
+        break;
       case ACTIONS.Delete:
         deleteResource({ id });
         break;
-      case ACTIONS.Edit:
-        renameResource({ id, name: "Jill Baby" });
+      default:
         break;
     }
   };
