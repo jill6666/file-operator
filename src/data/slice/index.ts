@@ -1,3 +1,4 @@
 import { folderActions } from "./folderSlice";
+import { controlActions } from "./controlSlice";
 
-export const actions = { ...folderActions };
+export const actions = { ...folderActions, ...controlActions };
