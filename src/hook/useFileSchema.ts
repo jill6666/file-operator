@@ -15,7 +15,7 @@ import store from "store2";
 import { mockFolderData } from "../data/mock";
 import getCompletePathByfilename from "../utils/getCompletePathByfilename";
 import clipboard from "../utils/clipboard";
-import size from "lodash/size";
+import cloneDeep from "lodash/cloneDeep";
 import { FILE_TYPE } from "../data/types/enum";
 import renewSchemaId from "../utils/renewSchemaId";
 
@@ -81,7 +81,6 @@ const useFileSchema = () => {
   const deleteResource = ({ id }: { id: string }) => {
     const hasResource = schema.findIndex((item) => item.id === id) !== -1;
     if (hasResource) return redux.delete({ id });
-
     console.error("Delete error, no such id in resource.");
   };
 
@@ -104,22 +103,21 @@ const useFileSchema = () => {
       if (!currentBoard) return console.error("Clipboard is empty.");
 
       const data = JSON.parse(currentBoard);
-      const newChild = renewSchemaId(data);
+      const isValid = checkIsNotDuplicate({
+        filename: data?.name,
+        parentId: parent.id,
+      });
+      if (!isValid) return alert("Duplicate name in a folder, please rename.");
 
-      const parentSchema = {
-        ...parent,
-        children: [
-          ...(parent?.children || []),
-          { ...newChild, parentId: parent.id },
-        ],
-      };
+      const deep = cloneDeep(schema);
+      const newChildren = renewSchemaId(parent.id, data);
 
-      const newSchema = schema.map((i) =>
-        i.id === parent.id ? parentSchema : i
-      );
-      console.log("newSchema === ", newSchema);
+      const newSchema = [...deep, ...newChildren];
+
       redux.update(newSchema);
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const cutResource = async (schema: ITreeSchema) => {
@@ -128,7 +126,6 @@ const useFileSchema = () => {
       .catch((e) => console.error("Cut error"));
 
     redux.delete(schema.id);
-    console.log("cutResource id: ", schema);
   };
 
   const searchResource = (name: string) => {

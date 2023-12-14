@@ -48,8 +48,10 @@ const MenuItem = ({ item }: { item: ITreeSchema }) => {
       </div>
       {isExpand && item.children && (
         <div className="pl-2 divide-y divide-[#555]">
-          {item.children.map((i) => (
-            <MenuItem item={i} />
+          {item.children.map((i, index) => (
+            <div key={i.id + index}>
+              <MenuItem item={i} />
+            </div>
           ))}
         </div>
       )}

@@ -15,7 +15,6 @@ export const ControlSlice = createSlice({
   },
   reducers: {
     setCurrentSchema(state, actions: PayloadAction<ITreeSchema>) {
-      console.log("currentShema === ", actions.payload);
       state.currentShema = actions.payload;
     },
     setRightClickSchema(

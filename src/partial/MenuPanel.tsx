@@ -65,7 +65,7 @@ const MenuPanel = () => {
   };
 
   return (
-    <div className="w-full border-r h-full bg-[#282c34]">
+    <div className="w-full border-r h-[90%] bg-[#282c34] overflow-scroll">
       {root && <MenuItem item={root} />}
       <div
         className="absolute"
