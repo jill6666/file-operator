@@ -32,3 +32,8 @@ export interface ICreateResource {
   parentId: string;
   type: "folder" | "file";
 }
+
+export interface IOption {
+  label: string;
+  value: string;
+}

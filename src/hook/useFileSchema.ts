@@ -8,6 +8,12 @@ import { v4 as uuidv4 } from "uuid";
 import { BROWSER_VISIBLE_EXTENSIONS } from "../constants";
 import store from "store2";
 import { mockFolderData } from "../data/mock";
+import getCompletePathByfilename from "../utils/getCompletePathByfilename";
+
+interface ICheckIsNotDuplicate {
+  filename: string;
+  parentId: string;
+}
 
 const useFileSchema = () => {
   const schema = useSelector(folderSelector.schema);
@@ -22,7 +28,21 @@ const useFileSchema = () => {
     redux.init(initData);
   };
 
+  const checkIsNotDuplicate = ({
+    filename,
+    parentId,
+  }: ICheckIsNotDuplicate) => {
+    const hasSameFilename = schema.find(
+      (item) => item?.parentId === parentId && item?.name === filename
+    );
+
+    return !Boolean(hasSameFilename);
+  };
+
   const createResource = ({ filename, parentId, type }: ICreateResource) => {
+    const isValid = checkIsNotDuplicate({ filename, parentId });
+    if (!isValid) return alert("Duplicate name in a folder, please rename.");
+
     const id = uuidv4();
     const extension = getFileExtension(filename);
     const browserVisible =
@@ -61,7 +81,16 @@ const useFileSchema = () => {
   const copyResource = () => {};
   const pasteResource = () => {};
   const cutResource = () => {};
-  const searchResource = () => {};
+
+  const searchResource = (name: string) => {
+    const resultOptions = getCompletePathByfilename(name, treeMap[0]);
+
+    redux.setSearchResult(resultOptions);
+  };
+
+  const clearSearchResult = () => {
+    redux.setSearchResult();
+  };
 
   return {
     treeMap,
@@ -73,6 +102,7 @@ const useFileSchema = () => {
     pasteResource,
     cutResource,
     searchResource,
+    clearSearchResult,
   };
 };
 

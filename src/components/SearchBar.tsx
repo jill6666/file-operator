@@ -1,10 +1,15 @@
 // @ts-nocheck
 import { useState, useRef } from "react";
 import size from "lodash/size";
+import { useSelector } from "react-redux";
+import { controlSelector } from "../data/slice/controlSlice";
+import { ISearchResult } from "../data/types/interface";
+import redux from "../data/redux";
 
 interface ISearchBar {
   placeholder?: string;
   onKeyDown?(e: any): void;
+  onClear?(e: any): void;
 }
 
 const VISIBLE = "visible";
@@ -12,7 +17,9 @@ const HIDDEN = "hidden";
 
 let intervalId: any = null;
 
-const SearchBar = ({ placeholder, onKeyDown }: ISearchBar) => {
+const SearchBar = ({ placeholder, onKeyDown, onClear }: ISearchBar) => {
+  const searchResult = useSelector(controlSelector.searchResult);
+
   const inputRef = useRef(null);
   const cursorRef = useRef(null);
   const fakeInputRef = useRef(null);
@@ -29,6 +36,7 @@ const SearchBar = ({ placeholder, onKeyDown }: ISearchBar) => {
 
   const handleClear = () => {
     setInputContent("");
+    onClear && onClear();
   };
 
   const setInputContent = (value?: string) => {
@@ -61,13 +69,20 @@ const SearchBar = ({ placeholder, onKeyDown }: ISearchBar) => {
     cursorRef.current.style.visibility = curVisible;
   };
 
+  const handleOnClick = (e: any, item: ISearchResult) => {
+    e.preventDefault();
+
+    onClear && onClear();
+    redux.setCurrentSchema(item);
+  };
+
   return (
     <div className="flex relative w-full h-12 border items-center rounded-sm">
       <div
         className="flex w-full relative items-center p-2 pl-[45px]"
         onClick={handleCmdOnClick}
       >
-        <div className="absolute top-0 left-[12px]">
+        <div className="absolute top-[] left-[12px]">
           <i className="ri-file-search-line"></i>
         </div>
         <span
@@ -85,7 +100,7 @@ const SearchBar = ({ placeholder, onKeyDown }: ISearchBar) => {
           </span>
         )}
       </div>
-      <div onClick={handleClear} className="absolute right-2">
+      <div onClick={handleClear} className="absolute right-2 cursor-pointer">
         {showClearBtn && <i className="ri-close-line"></i>}
       </div>
 
@@ -99,6 +114,22 @@ const SearchBar = ({ placeholder, onKeyDown }: ISearchBar) => {
         onChange={handleOnChange}
         onKeyDown={handleOnKeyDown}
       />
+
+      {Boolean(size(searchResult)) && (
+        <div className="w-full bg-[#282c34] absolute top-[60px] border border-white z-40 rounded-sm text-base">
+          <ul className="py-2 px-4 text-left divide-y divide-[#555]">
+            {searchResult.map((option) => (
+              <li
+                key={option?.label}
+                className="py-2 cursor-pointer"
+                onClick={(e) => handleOnClick(e, option)}
+              >
+                {option?.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

@@ -41,7 +41,7 @@ const MenuPanel = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full border-r h-full bg-[#282c34]">
       {root && <MenuItem item={root} />}
       <div
         className="absolute"

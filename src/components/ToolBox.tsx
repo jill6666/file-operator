@@ -24,7 +24,7 @@ const ToolBox = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative text-[#161a21]">
       <div
         className="absolute right-[-15px] top-[-15px] w-6 h-6 bg-white border text-center items-center rounded-[5rem] cursor-pointer text-sm"
         onClick={handleOnClose}

@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ITreeSchema } from "@data/types/interface";
+import { ITreeSchema, IOption } from "@data/types/interface";
+
+interface ISearchResult extends IOption, ITreeSchema {}
 
 export const ControlSlice = createSlice({
   name: "controlReducer",
@@ -9,9 +11,11 @@ export const ControlSlice = createSlice({
       schema: ITreeSchema;
       position: { x: string; y: string };
     },
+    searchResult: [] as ISearchResult[],
   },
   reducers: {
     setCurrentSchema(state, actions: PayloadAction<ITreeSchema>) {
+      console.log("currentShema === ", actions.payload);
       state.currentShema = actions.payload;
     },
     setRightClickSchema(
@@ -22,6 +26,9 @@ export const ControlSlice = createSlice({
       }>
     ) {
       state.rightClickSchema = actions.payload;
+    },
+    setSearchResult(state, actions: PayloadAction<ISearchResult[]>) {
+      state.searchResult = actions.payload;
     },
   },
 });
@@ -35,6 +42,8 @@ export const controlSelector = {
     state?.[ControlSlice.name]?.currentShema,
   rightClickSchema: (state: TControlState) =>
     state?.[ControlSlice.name]?.rightClickSchema,
+  searchResult: (state: TControlState) =>
+    state?.[ControlSlice.name]?.searchResult,
 };
 
 export const controlActions = ControlSlice.actions;
