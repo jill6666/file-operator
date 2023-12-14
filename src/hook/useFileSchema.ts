@@ -83,7 +83,11 @@ const useFileSchema = () => {
   const cutResource = () => {};
 
   const searchResource = (name: string) => {
-    const resultOptions = getCompletePathByfilename(name, treeMap[0]);
+    const resultOptions = getCompletePathByfilename(
+      name,
+      treeMap[0],
+      treeMap[0]?.name
+    );
 
     redux.setSearchResult(resultOptions);
   };

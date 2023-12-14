@@ -1,6 +1,10 @@
 import { ITreeSchema } from "../data/types/interface";
 
-const getCompletePathByfilename = (filename: string, data: ITreeSchema) => {
+const getCompletePathByfilename = (
+  filename: string,
+  data: ITreeSchema,
+  rootname: string
+) => {
   function findPath(node: ITreeSchema, currentPath: string) {
     if (node?.name?.includes(filename)) {
       result.push({ label: currentPath, value: node?.id, ...node });
@@ -19,7 +23,7 @@ const getCompletePathByfilename = (filename: string, data: ITreeSchema) => {
 
   const result: any = [];
 
-  findPath(data, "");
+  findPath(data, rootname);
 
   return result;
 };
