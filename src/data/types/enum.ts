@@ -7,3 +7,8 @@ export enum ACTIONS {
   Paste = "paste",
   Cut = "cut",
 }
+
+export enum FILE_TYPE {
+  Folder = "folder",
+  File = "file",
+}

@@ -1,7 +1,12 @@
 import { useSelector } from "react-redux";
 import { folderSelector } from "../data/slice/folderSlice";
 import refineDataToTree from "../data/refine/refineDataToTree";
-import { IEditProps, ICreateResource } from "../data/types/interface";
+import {
+  IEditProps,
+  ICreateResource,
+  ITreeSchema,
+  TFolderChildren,
+} from "../data/types/interface";
 import redux from "../data/redux";
 import getFileExtension from "../utils/getFileExtension";
 import { v4 as uuidv4 } from "uuid";
@@ -9,6 +14,10 @@ import { BROWSER_VISIBLE_EXTENSIONS } from "../constants";
 import store from "store2";
 import { mockFolderData } from "../data/mock";
 import getCompletePathByfilename from "../utils/getCompletePathByfilename";
+import clipboard from "../utils/clipboard";
+import size from "lodash/size";
+import { FILE_TYPE } from "../data/types/enum";
+import renewSchemaId from "../utils/renewSchemaId";
 
 interface ICheckIsNotDuplicate {
   filename: string;
@@ -39,29 +48,34 @@ const useFileSchema = () => {
     return !Boolean(hasSameFilename);
   };
 
+  const newFile = (id: string, name: string, parentId: string) => {
+    const extension = getFileExtension(name);
+    const browserVisible = BROWSER_VISIBLE_EXTENSIONS.includes(extension);
+    const schema = { id, parentId, name, extension, browserVisible };
+
+    redux.create(schema);
+  };
+
+  const newFolder = (id: string, name: string, parentId: string) => {
+    const schema = { id, name, parentId, children: [] };
+    redux.create(schema);
+  };
+
   const createResource = ({ filename, parentId, type }: ICreateResource) => {
     const isValid = checkIsNotDuplicate({ filename, parentId });
     if (!isValid) return alert("Duplicate name in a folder, please rename.");
 
     const id = uuidv4();
-    const extension = getFileExtension(filename);
-    const browserVisible =
-      extension && BROWSER_VISIBLE_EXTENSIONS.includes(extension);
-
-    const params = {
-      folder: { id, parentId, name: filename },
-      file: {
-        id,
-        parentId,
-        name: filename,
-        extension,
-        browserVisible,
-      },
-    };
-
-    if (!params[type]) console.error("Create error, invalid type.");
-
-    redux.create(params[type]);
+    switch (type) {
+      case FILE_TYPE.Folder:
+        newFolder(id, filename, parentId);
+        break;
+      case FILE_TYPE.File:
+        newFile(id, filename, parentId);
+        break;
+      default:
+        break;
+    }
   };
 
   const deleteResource = ({ id }: { id: string }) => {
@@ -78,9 +92,44 @@ const useFileSchema = () => {
     console.error("Rename error, no such id in resource.");
   };
 
-  const copyResource = () => {};
-  const pasteResource = () => {};
-  const cutResource = () => {};
+  const copyResource = async (schema: ITreeSchema) => {
+    await clipboard
+      .set(JSON.stringify(schema))
+      .catch((e) => console.error("Copy error"));
+  };
+
+  const pasteResource = async (parent: ITreeSchema) => {
+    try {
+      const currentBoard = await clipboard.read();
+      if (!currentBoard) return console.error("Clipboard is empty.");
+
+      const data = JSON.parse(currentBoard);
+      const newChild = renewSchemaId(data);
+
+      const parentSchema = {
+        ...parent,
+        children: [
+          ...(parent?.children || []),
+          { ...newChild, parentId: parent.id },
+        ],
+      };
+
+      const newSchema = schema.map((i) =>
+        i.id === parent.id ? parentSchema : i
+      );
+      console.log("newSchema === ", newSchema);
+      redux.update(newSchema);
+    } catch (e) {}
+  };
+
+  const cutResource = async (schema: ITreeSchema) => {
+    await clipboard
+      .set(JSON.stringify(schema))
+      .catch((e) => console.error("Cut error"));
+
+    redux.delete(schema.id);
+    console.log("cutResource id: ", schema);
+  };
 
   const searchResource = (name: string) => {
     const resultOptions = getCompletePathByfilename(

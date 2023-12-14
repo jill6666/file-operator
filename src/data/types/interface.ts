@@ -1,11 +1,13 @@
+import { FILE_TYPE } from "./enum";
+
 export interface ITreeSchema {
   id: string;
   name: string;
   parentId: string | null;
-  children?: TFolderChildren;
+  children?: TFolderChildren[];
 }
 
-export type TFolderChildren = Array<ITreeSchema | IFileSchema>;
+export type TFolderChildren = IFileSchema | ITreeSchema;
 
 export interface IFileSchema {
   id: string;
@@ -30,7 +32,7 @@ export interface ISchema {
 export interface ICreateResource {
   filename: string;
   parentId: string;
-  type: "folder" | "file";
+  type: FILE_TYPE;
 }
 
 export interface IOption {

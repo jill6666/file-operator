@@ -1,9 +1,9 @@
 const getFileExtension = (filename: string) => {
   const index = filename.lastIndexOf(".");
-  if (index === -1) return undefined;
+  if (index === -1) return "";
 
-  const arr = filename.substring(index, filename.length);
-  return arr?.[1];
+  const result = filename.substring(index, filename.length);
+  return result as string;
 };
 
 export default getFileExtension;

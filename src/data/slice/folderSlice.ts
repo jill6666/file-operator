@@ -32,6 +32,10 @@ export const FolderSlice = createSlice({
       state.schema = newState;
       store.set("resource_schema", newState);
     },
+    update(state, actions: PayloadAction<ISchema[]>) {
+      state.schema = actions.payload;
+      store.set("resource_schema", actions.payload);
+    },
   },
 });
 
