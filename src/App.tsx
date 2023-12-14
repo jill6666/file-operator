@@ -5,6 +5,7 @@ import useFileSchema from "./hook/useFileSchema";
 import MenuPanel from "./partial/MenuPanel";
 import { useSelector } from "react-redux";
 import { controlSelector } from "./data/slice/controlSlice";
+import SearchBar from "./components/SearchBar";
 
 function App() {
   const currentSchema = useSelector(controlSelector.currentShema);
@@ -15,12 +16,19 @@ function App() {
     initSchema();
   }, []);
 
+  const handleOnKeyDown = (e: any) => {
+    // TODO: search file
+  };
+
   return (
     <div className="App flex w-full">
       <div className="w-[20%] min-w-[250px]">
         <MenuPanel />
       </div>
       <header className="App-header w-[80%]">
+        <div className="w-full p-2">
+          <SearchBar onKeyDown={handleOnKeyDown} />
+        </div>
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.

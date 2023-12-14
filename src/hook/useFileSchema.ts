@@ -58,12 +58,21 @@ const useFileSchema = () => {
     console.error("Rename error, no such id in resource.");
   };
 
+  const copyResource = () => {};
+  const pasteResource = () => {};
+  const cutResource = () => {};
+  const searchResource = () => {};
+
   return {
     treeMap,
     initSchema,
     renameResource,
     deleteResource,
     createResource,
+    copyResource,
+    pasteResource,
+    cutResource,
+    searchResource,
   };
 };
 

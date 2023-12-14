@@ -29,7 +29,7 @@ const ToolBox = ({
         className="absolute right-[-15px] top-[-15px] w-6 h-6 bg-white border text-center items-center rounded-[5rem] cursor-pointer text-sm"
         onClick={handleOnClose}
       >
-        x
+        <i className="ri-close-line"></i>
       </div>
       <div className="flex flex-col p-2 rounded-sm space-y-2 divide-y bg-white p-2 border">
         {options.map((item) => (
