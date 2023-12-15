@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IEditProps, ISchema } from "@data/types/interface";
 import store from "store2";
-import clearNoParentItem from "../../utils/clearNoParentItem";
 
 export const FolderSlice = createSlice({
   name: "folderReducer",

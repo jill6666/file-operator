@@ -1,5 +1,4 @@
 import { ITreeSchema } from "../data/types/interface";
-import size from "lodash/size";
 import {
   FOLDER_ACTIONS,
   FILE_ACTIONS,
@@ -8,7 +7,7 @@ import {
 
 const getMenuOptions = (schema: ITreeSchema) => {
   const isRoot = schema?.id === "root";
-  const isFolder = size(schema?.children);
+  const isFolder = Boolean(schema?.children);
 
   if (isRoot) return ROOT_FOLDER_ACTIONS;
   return isFolder ? FOLDER_ACTIONS : FILE_ACTIONS;
