@@ -18,6 +18,7 @@ import clipboard from "../utils/clipboard";
 import cloneDeep from "lodash/cloneDeep";
 import { FILE_TYPE } from "../data/types/enum";
 import renewSchemaId from "../utils/renewSchemaId";
+import clearNoParentItem from "../utils/clearNoParentItem";
 
 interface ICheckIsNotDuplicate {
   filename: string;
@@ -120,12 +121,14 @@ const useFileSchema = () => {
     }
   };
 
-  const cutResource = async (schema: ITreeSchema) => {
+  const cutResource = async (target: ITreeSchema) => {
     await clipboard
-      .set(JSON.stringify(schema))
+      .set(JSON.stringify(target))
       .catch((e) => console.error("Cut error"));
 
-    redux.delete(schema.id);
+    const filter = schema.filter((s) => s.id !== target.id);
+    const newSchema = clearNoParentItem(filter, target.id);
+    redux.update(newSchema);
   };
 
   const searchResource = (name: string) => {
