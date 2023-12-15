@@ -5,7 +5,6 @@ import {
   IEditProps,
   ICreateResource,
   ITreeSchema,
-  TFolderChildren,
 } from "../data/types/interface";
 import redux from "../data/redux";
 import getFileExtension from "../utils/getFileExtension";
@@ -79,10 +78,18 @@ const useFileSchema = () => {
     }
   };
 
+  const deleteSchema = (id: string) => {
+    const filter = schema.filter((s) => s.id !== id);
+    const newSchema = clearNoParentItem(filter, id);
+    redux.update(newSchema);
+  };
+
   const deleteResource = ({ id }: { id: string }) => {
     const hasResource = schema.findIndex((item) => item.id === id) !== -1;
-    if (hasResource) return redux.delete({ id });
-    console.error("Delete error, no such id in resource.");
+    if (!hasResource)
+      return console.error("Delete error, no such id in resource.");
+
+    deleteSchema(id);
   };
 
   const renameResource = ({ id, name }: IEditProps) => {
@@ -126,9 +133,7 @@ const useFileSchema = () => {
       .set(JSON.stringify(target))
       .catch((e) => console.error("Cut error"));
 
-    const filter = schema.filter((s) => s.id !== target.id);
-    const newSchema = clearNoParentItem(filter, target.id);
-    redux.update(newSchema);
+    deleteSchema(target.id);
   };
 
   const searchResource = (name: string) => {
