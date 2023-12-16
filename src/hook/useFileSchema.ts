@@ -9,7 +9,7 @@ import {
 import redux from "../data/redux";
 import getFileExtension from "../utils/getFileExtension";
 import { v4 as uuidv4 } from "uuid";
-import { BROWSER_VISIBLE_EXTENSIONS } from "../constants";
+import { BROWSER_VISIBLE_EXTENSIONS, DEFAULT_FILE_CONTENT } from "../constants";
 import store from "store2";
 import { mockFolderData } from "../data/mock";
 import getCompletePathByfilename from "../utils/getCompletePathByfilename";
@@ -53,6 +53,8 @@ const useFileSchema = () => {
     const browserVisible = BROWSER_VISIBLE_EXTENSIONS.includes(extension);
     const schema = { id, parentId, name, extension, browserVisible };
 
+    // @ts-ignore
+    store.set(id, DEFAULT_FILE_CONTENT?.[extension] || "test");
     redux.create(schema);
   };
 
@@ -82,6 +84,7 @@ const useFileSchema = () => {
     const filter = schema.filter((s) => s.id !== id);
     const newSchema = clearNoParentItem(filter, id);
     redux.update(newSchema);
+    store.remove(id);
   };
 
   const deleteResource = ({ id }: { id: string }) => {
@@ -93,10 +96,19 @@ const useFileSchema = () => {
   };
 
   const renameResource = ({ id, name }: IEditProps) => {
-    const hasResource = schema.findIndex((item) => item.id === id) !== -1;
-    if (hasResource) return redux.rename({ id, name });
+    const deep = cloneDeep(schema);
+    const hasResource = deep.findIndex((i) => i.id === id) !== -1;
+    if (!hasResource) return console.error("Rename error, not in resource.");
 
-    console.error("Rename error, no such id in resource.");
+    const newSchema = deep.map((item) => {
+      if (item.id !== id) return item;
+
+      const extension = getFileExtension(name);
+      const browserVisible = BROWSER_VISIBLE_EXTENSIONS.includes(extension);
+      return { ...item, name, extension, browserVisible };
+    });
+
+    redux.update(newSchema);
   };
 
   const copyResource = async (schema: ITreeSchema) => {

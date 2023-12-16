@@ -1,6 +1,13 @@
 import { ACTIONS } from "./data/types/enum";
 
-export const BROWSER_VISIBLE_EXTENSIONS = ["txt", "js", "ts", "json", "text"];
+export const BROWSER_VISIBLE_EXTENSIONS = [".txt", ".js", ".ts", ".json"];
+
+export const DEFAULT_FILE_CONTENT = {
+  ".txt": "Type something interesting with .txt file...",
+  ".js": "Type something interesting with .js file...",
+  ".ts": "Type something interesting with .ts file...",
+  ".json": "Type something interesting with .json file...",
+};
 
 export const ROOT_FOLDER_ACTIONS = [
   { label: "New file...", value: ACTIONS.CreateFile },
