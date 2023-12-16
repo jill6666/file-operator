@@ -12,6 +12,7 @@ export const ControlSlice = createSlice({
       position: { x: string; y: string };
     },
     searchResult: [] as ISearchResult[],
+    onEditId: "",
   },
   reducers: {
     setCurrentSchema(state, actions: PayloadAction<ITreeSchema>) {
@@ -29,6 +30,9 @@ export const ControlSlice = createSlice({
     setSearchResult(state, actions: PayloadAction<ISearchResult[]>) {
       state.searchResult = actions.payload;
     },
+    setEditing(state, actions: PayloadAction<string>) {
+      state.onEditId = actions.payload;
+    },
   },
 });
 
@@ -43,6 +47,7 @@ export const controlSelector = {
     state?.[ControlSlice.name]?.rightClickSchema,
   searchResult: (state: TControlState) =>
     state?.[ControlSlice.name]?.searchResult,
+  onEditId: (state: TControlState) => state?.[ControlSlice.name]?.onEditId,
 };
 
 export const controlActions = ControlSlice.actions;

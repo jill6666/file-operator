@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import useFileSchema from "../hook/useFileSchema";
 import MenuItem from "../components/MenuItem";
 import ToolBox from "../components/ToolBox";
@@ -8,6 +9,7 @@ import size from "lodash/size";
 import { ACTIONS, FILE_TYPE } from "../data/types/enum";
 
 const MenuPanel = () => {
+  const [editType, setEdit] = useState<ACTIONS>();
   const currentSchema = useSelector(controlSelector.rightClickSchema);
   const {
     treeMap,
@@ -22,46 +24,57 @@ const MenuPanel = () => {
   const root = treeMap?.[0];
   const id = currentSchema?.schema?.id;
 
+  useEffect(() => {
+    console.log("editType", editType);
+  }, [editType]);
+
   const handleOnClose = () => {
     redux.setRightClickSchema({});
   };
-  const handleOnClick = (type: ACTIONS) => {
-    redux.setRightClickSchema({});
 
-    // TODO: create file, create folder, rename
-    switch (type) {
-      case ACTIONS.CreateFile:
+  const actionMp = {
+    [ACTIONS.CreateFile]: {
+      onClick: () => {
+        setEdit(ACTIONS.CreateFile);
+        redux.setEditing(id);
+      },
+      callback: (val: any) =>
         createResource({
-          filename: "0000.ts",
+          filename: val,
           parentId: id,
           type: FILE_TYPE.File,
-        });
-        break;
-      case ACTIONS.CreateFolder:
+        }),
+    },
+    [ACTIONS.CreateFolder]: {
+      onClick: () => {
+        setEdit(ACTIONS.CreateFolder);
+        redux.setEditing(id);
+      },
+      callback: (val: any) =>
         createResource({
-          filename: "0001",
+          filename: val,
           parentId: id,
           type: FILE_TYPE.Folder,
-        });
-        break;
-      case ACTIONS.Edit:
-        renameResource({ id, name: "Jill Baby" });
-        break;
-      case ACTIONS.Delete:
-        deleteResource({ id });
-        break;
-      case ACTIONS.Copy:
-        copyResource(currentSchema.schema);
-        break;
-      case ACTIONS.Paste:
-        pasteResource(currentSchema.schema);
-        break;
-      case ACTIONS.Cut:
-        cutResource(currentSchema.schema);
-        break;
-      default:
-        break;
-    }
+        }),
+    },
+    [ACTIONS.Edit]: {
+      onClick: () => {
+        setEdit(ACTIONS.Edit);
+        redux.setEditing(id);
+      },
+      callback: (val: any) => renameResource({ id, name: val }),
+    },
+    [ACTIONS.Delete]: {
+      onClick: () => deleteResource({ id }),
+    },
+    [ACTIONS.Copy]: { onClick: () => copyResource(currentSchema.schema) },
+    [ACTIONS.Paste]: { onClick: () => pasteResource(currentSchema.schema) },
+    [ACTIONS.Cut]: { onClick: () => cutResource(currentSchema.schema) },
+  };
+
+  const handleOnClick = (type: ACTIONS) => {
+    redux.setRightClickSchema({});
+    actionMp?.[type]?.onClick();
   };
 
   const GITHUB_INFO = {
@@ -70,10 +83,25 @@ const MenuPanel = () => {
     title: "Source code on Github",
   };
 
+  const handleOnEnter = (value: string) => {
+    // @ts-ignore
+    editType && actionMp?.[editType]?.callback(value);
+    redux.setEditing("");
+  };
+  const handleInputOnBlur = () => {
+    redux.setEditing("");
+  };
+
   return (
     <div className="w-full h-full border-r bg-[#282c34] ">
       <div className="overflow-scroll h-[calc(100vh-60px)] border-b pb-2">
-        {root && <MenuItem item={root} />}
+        {root && (
+          <MenuItem
+            item={root}
+            onEnter={handleOnEnter}
+            inputOnBlur={handleInputOnBlur}
+          />
+        )}
       </div>
       <div
         className="absolute"
