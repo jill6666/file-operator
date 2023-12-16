@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useFileSchema from "../hook/useFileSchema";
 import MenuItem from "../components/MenuItem";
 import ToolBox from "../components/ToolBox";
@@ -7,10 +7,12 @@ import { controlSelector } from "../data/slice/controlSlice";
 import redux from "../data/redux";
 import size from "lodash/size";
 import { ACTIONS, FILE_TYPE } from "../data/types/enum";
+import { GITHUB_INFO } from "../constants";
 
 const MenuPanel = () => {
   const [editType, setEdit] = useState<ACTIONS>();
-  const currentSchema = useSelector(controlSelector.rightClickSchema);
+  const currentSchema = useSelector(controlSelector.currentShema);
+  const rightClickSchema = useSelector(controlSelector.rightClickSchema);
   const {
     treeMap,
     renameResource,
@@ -22,12 +24,7 @@ const MenuPanel = () => {
   } = useFileSchema();
 
   const root = treeMap?.[0];
-  const id = currentSchema?.schema?.id;
-
-  useEffect(() => {
-    console.log("editType", editType);
-  }, [editType]);
-
+  const id = currentSchema?.id;
   const handleOnClose = () => {
     redux.setRightClickSchema({});
   };
@@ -60,27 +57,22 @@ const MenuPanel = () => {
     [ACTIONS.Edit]: {
       onClick: () => {
         setEdit(ACTIONS.Edit);
-        redux.setEditing(id);
+        redux.setCurrentSchema(rightClickSchema.schema);
+        redux.setEditing(rightClickSchema.schema.id);
       },
       callback: (val: any) => renameResource({ id, name: val }),
     },
     [ACTIONS.Delete]: {
       onClick: () => deleteResource({ id }),
     },
-    [ACTIONS.Copy]: { onClick: () => copyResource(currentSchema.schema) },
-    [ACTIONS.Paste]: { onClick: () => pasteResource(currentSchema.schema) },
-    [ACTIONS.Cut]: { onClick: () => cutResource(currentSchema.schema) },
+    [ACTIONS.Copy]: { onClick: () => copyResource(rightClickSchema.schema) },
+    [ACTIONS.Paste]: { onClick: () => pasteResource(rightClickSchema.schema) },
+    [ACTIONS.Cut]: { onClick: () => cutResource(rightClickSchema.schema) },
   };
 
   const handleOnClick = (type: ACTIONS) => {
-    redux.setRightClickSchema({});
     actionMp?.[type]?.onClick();
-  };
-
-  const GITHUB_INFO = {
-    icon: "ri-github-fill",
-    url: "https://github.com/jill6666",
-    title: "Source code on Github",
+    redux.setRightClickSchema({});
   };
 
   const handleOnEnter = (value: string) => {
@@ -106,13 +98,13 @@ const MenuPanel = () => {
       <div
         className="absolute"
         style={{
-          opacity: size(currentSchema) ? 1 : 0,
-          top: currentSchema?.position?.y,
-          left: currentSchema?.position?.x,
+          opacity: size(rightClickSchema) ? 1 : 0,
+          top: rightClickSchema?.position?.y,
+          left: rightClickSchema?.position?.x,
         }}
       >
         <ToolBox
-          schema={currentSchema.schema}
+          schema={rightClickSchema.schema}
           onClose={handleOnClose}
           onClick={handleOnClick}
         />

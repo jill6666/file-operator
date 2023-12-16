@@ -28,3 +28,9 @@ export const FILE_ACTIONS = [
   { label: "Copy", value: ACTIONS.Copy },
   { label: "Cut", value: ACTIONS.Cut },
 ];
+
+export const GITHUB_INFO = {
+  icon: "ri-github-fill",
+  url: "https://github.com/jill6666",
+  title: "Source code on Github",
+};
