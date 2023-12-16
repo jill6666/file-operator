@@ -64,9 +64,17 @@ const MenuPanel = () => {
     }
   };
 
+  const GITHUB_INFO = {
+    icon: "ri-github-fill",
+    url: "https://github.com/jill6666",
+    title: "Source code on Github",
+  };
+
   return (
-    <div className="w-full border-r h-[90%] bg-[#282c34] overflow-scroll">
-      {root && <MenuItem item={root} />}
+    <div className="w-full h-full border-r bg-[#282c34] ">
+      <div className="overflow-scroll h-[calc(100vh-60px)] border-b pb-2">
+        {root && <MenuItem item={root} />}
+      </div>
       <div
         className="absolute"
         style={{
@@ -81,6 +89,15 @@ const MenuPanel = () => {
           onClick={handleOnClick}
         />
       </div>
+      <a
+        href={GITHUB_INFO.url}
+        target="_blank"
+        rel="noreferrer"
+        className="flex items-center h-[60px] px-4 space-x-2 cursor-pointer"
+      >
+        <i className={`${GITHUB_INFO.icon} text-2xl`}></i>
+        <p>{GITHUB_INFO.title}</p>
+      </a>
     </div>
   );
 };
