@@ -8,6 +8,7 @@ import redux from "../data/redux";
 import size from "lodash/size";
 import { ACTIONS, FILE_TYPE } from "../data/types/enum";
 import { GITHUB_INFO } from "../constants";
+import { v4 as uuidv4 } from "uuid";
 
 const MenuPanel = () => {
   const [editType, setEdit] = useState<ACTIONS>();
@@ -29,11 +30,15 @@ const MenuPanel = () => {
     redux.setRightClickSchema({});
   };
 
+  // toolbox item onClick & input onKeydown callback
   const actionMp = {
     [ACTIONS.CreateFile]: {
       onClick: () => {
         setEdit(ACTIONS.CreateFile);
-        redux.setEditing(id);
+
+        const newId = uuidv4();
+        redux.create({ id: newId, parentId: id });
+        redux.setEditing(newId);
       },
       callback: (val: any) =>
         createResource({
@@ -45,7 +50,10 @@ const MenuPanel = () => {
     [ACTIONS.CreateFolder]: {
       onClick: () => {
         setEdit(ACTIONS.CreateFolder);
-        redux.setEditing(id);
+
+        const newId = uuidv4();
+        redux.create({ id: newId, parentId: id });
+        redux.setEditing(newId);
       },
       callback: (val: any) =>
         createResource({
@@ -70,6 +78,7 @@ const MenuPanel = () => {
     [ACTIONS.Cut]: { onClick: () => cutResource(rightClickSchema.schema) },
   };
 
+  // handle toolbox item onclick
   const handleOnClick = (type: ACTIONS) => {
     actionMp?.[type]?.onClick();
     redux.setRightClickSchema({});

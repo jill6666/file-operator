@@ -18,6 +18,7 @@ import cloneDeep from "lodash/cloneDeep";
 import { FILE_TYPE } from "../data/types/enum";
 import renewSchemaId from "../utils/renewSchemaId";
 import clearNoParentItem from "../utils/clearNoParentItem";
+import { controlSelector } from "../data/slice/controlSlice";
 
 interface ICheckIsNotDuplicate {
   filename: string;
@@ -26,6 +27,7 @@ interface ICheckIsNotDuplicate {
 
 const useFileSchema = () => {
   const schema = useSelector(folderSelector.schema);
+  const onEditId = useSelector(controlSelector.onEditId);
   const treeMap = refineDataToTree(schema);
 
   const initSchema = () => {
@@ -67,13 +69,12 @@ const useFileSchema = () => {
     const isValid = checkIsNotDuplicate({ filename, parentId });
     if (!isValid) return alert("Duplicate name in a folder, please rename.");
 
-    const id = uuidv4();
     switch (type) {
       case FILE_TYPE.Folder:
-        newFolder(id, filename, parentId);
+        newFolder(onEditId, filename, parentId);
         break;
       case FILE_TYPE.File:
-        newFile(id, filename, parentId);
+        newFile(onEditId, filename, parentId);
         break;
       default:
         break;

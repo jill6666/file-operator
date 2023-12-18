@@ -42,10 +42,7 @@ const MenuItem = ({ item, onEnter, inputOnBlur }: IMenuItem) => {
 
   const handleOnKeyDown = (e: any) => {
     const isEnterKey = e?.code === "Enter" || e?.keyCode === 13;
-    if (isEnterKey) {
-      console.log("on key down");
-      onEnter && onEnter(inputValue);
-    }
+    if (isEnterKey) onEnter && onEnter(inputValue);
   };
 
   const handleOnBlur = () => {
