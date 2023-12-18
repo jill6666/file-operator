@@ -7,6 +7,7 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./data/store";
 import "remixicon/fonts/remixicon.css";
+import "highlight.js/styles/a11y-dark.css";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

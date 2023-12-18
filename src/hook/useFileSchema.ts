@@ -11,7 +11,6 @@ import getFileExtension from "../utils/getFileExtension";
 import { v4 as uuidv4 } from "uuid";
 import { BROWSER_VISIBLE_EXTENSIONS, DEFAULT_FILE_CONTENT } from "../constants";
 import store from "store2";
-import { mockFolderData } from "../data/mock";
 import getCompletePathByfilename from "../utils/getCompletePathByfilename";
 import clipboard from "../utils/clipboard";
 import cloneDeep from "lodash/cloneDeep";
@@ -33,7 +32,7 @@ const useFileSchema = () => {
     if (localStorageData) return redux.init(localStorageData);
 
     const id = uuidv4();
-    const initData = mockFolderData || [{ id, name: "App", parentId: null }];
+    const initData = [{ id, name: "MyApp", parentId: null }];
     redux.init(initData);
   };
 

@@ -1,12 +1,18 @@
 import { ACTIONS } from "./data/types/enum";
+import PkgJson from "../package.json";
 
 export const BROWSER_VISIBLE_EXTENSIONS = [".txt", ".js", ".ts", ".json"];
 
+const initJSFile = `const foo = 'boo';`;
+const initTSFile = `function getUser (id: string): IUser { return { id: '00-1122', name: 'Jill' } }`;
+const initTxtFile = `Type something interesting with .txt file...`;
+const initJsonFile = PkgJson;
+
 export const DEFAULT_FILE_CONTENT = {
-  ".txt": "Type something interesting with .txt file...",
-  ".js": "Type something interesting with .js file...",
-  ".ts": "Type something interesting with .ts file...",
-  ".json": "Type something interesting with .json file...",
+  ".txt": initTxtFile,
+  ".js": initJSFile,
+  ".ts": initTSFile,
+  ".json": initJsonFile,
 };
 
 export const ROOT_FOLDER_ACTIONS = [

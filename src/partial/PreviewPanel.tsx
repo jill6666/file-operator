@@ -4,6 +4,7 @@ import { controlSelector } from "../data/slice/controlSlice";
 import logo from "../logo.svg";
 import size from "lodash/size";
 import store from "store2";
+import Highlight from "react-highlight";
 
 const PreviewPanel = () => {
   const [fileContent, setFileContent] = useState<any>();
@@ -18,7 +19,10 @@ const PreviewPanel = () => {
     setBrowserVisible(visibility);
 
     const data = visibility && getFileContent(currentSchema.id);
-    data && setFileContent(data);
+    // @ts-ignore
+    const isJson = currentSchema?.extension === ".json";
+    const fileData = isJson ? JSON.stringify(data, null, 4) : data;
+    data && setFileContent(fileData);
   }, [currentSchema]);
 
   const getFileContent = (id: string) => {
@@ -27,20 +31,24 @@ const PreviewPanel = () => {
     return storedData;
   };
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-[calc(100%-60px)] overflow-scroll">
       {!Boolean(size(currentSchema)) && (
         <div className="w-full h-full flex justify-center items-center">
           <img src={logo} className="App-logo" alt="react logo" />
         </div>
       )}
-      <div className="p-2 border h-full">
+      <div className="p-2 border-t">
         {!browserVisible && (
           <div className="text-lg text-[#555]">
             The file extension is not supported.
           </div>
         )}
         {browserVisible && (
-          <div>fileContent: {JSON.stringify(fileContent)}</div>
+          <div className="text-left">
+            <Highlight className="javascript h-full">
+              {fileContent}
+            </Highlight>
+          </div>
         )}
       </div>
     </div>
