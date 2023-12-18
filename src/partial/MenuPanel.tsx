@@ -9,13 +9,14 @@ import size from "lodash/size";
 import { ACTIONS, FILE_TYPE } from "../data/types/enum";
 import { GITHUB_INFO } from "../constants";
 import { v4 as uuidv4 } from "uuid";
-import Dialog from "../components/Dialog";
 
 const MenuPanel = () => {
   const [editType, setEdit] = useState<ACTIONS>();
-  const [open, setOpen] = useState(false);
+  const [toolboxOpen, setToolboxOpen] = useState(false);
+
   const currentSchema = useSelector(controlSelector.currentShema);
   const rightClickSchema = useSelector(controlSelector.rightClickSchema);
+  const onEditId = useSelector(controlSelector.onEditId);
   const {
     treeMap,
     renameResource,
@@ -31,6 +32,11 @@ const MenuPanel = () => {
   const handleOnClose = () => {
     redux.setRightClickSchema({});
   };
+  const toolboxStyle = {
+    opacity: size(rightClickSchema) ? 1 : 0,
+    top: rightClickSchema?.position?.y,
+    left: rightClickSchema?.position?.x,
+  };
 
   useEffect(() => {
     console.log("currentSchema.id", id);
@@ -44,13 +50,14 @@ const MenuPanel = () => {
         setEdit(ACTIONS.CreateFile);
 
         const newId = uuidv4();
-        redux.create({ id: newId, parentId: id });
+        redux.create({ id: newId, parentId: rightClickSchema.schema?.id });
         redux.setEditing(newId);
       },
       callback: (val: any) =>
+        currentSchema.parentId &&
         createResource({
           filename: val,
-          parentId: id,
+          parentId: currentSchema.parentId,
           type: FILE_TYPE.File,
         }),
     },
@@ -59,13 +66,14 @@ const MenuPanel = () => {
         setEdit(ACTIONS.CreateFolder);
 
         const newId = uuidv4();
-        redux.create({ id: newId, parentId: id });
+        redux.create({ id: newId, parentId: rightClickSchema.schema?.id });
         redux.setEditing(newId);
       },
       callback: (val: any) =>
+        currentSchema.parentId &&
         createResource({
           filename: val,
-          parentId: id,
+          parentId: currentSchema.parentId,
           type: FILE_TYPE.Folder,
         }),
     },
@@ -78,7 +86,7 @@ const MenuPanel = () => {
       callback: (val: any) => renameResource({ id, name: val }),
     },
     [ACTIONS.Delete]: {
-      onClick: () => deleteResource({ id }),
+      onClick: () => deleteResource({ id: rightClickSchema.schema.id }),
     },
     [ACTIONS.Copy]: { onClick: () => copyResource(rightClickSchema.schema) },
     [ACTIONS.Paste]: { onClick: () => pasteResource(rightClickSchema.schema) },
@@ -86,45 +94,47 @@ const MenuPanel = () => {
   };
 
   // handle toolbox item onclick
-  const handleOnClick = (type: ACTIONS) => {
+  const handleToolboxOnClick = (type: ACTIONS) => {
     actionMp?.[type]?.onClick();
-    redux.setRightClickSchema({});
+    setToolboxOpen(false);
   };
 
-  const handleOnEnter = (value: string) => {
+  const handleMenuItemOnSubmit = (value: string) => {
     // @ts-ignore
     editType && actionMp?.[editType]?.callback(value);
     redux.setEditing("");
   };
-  const handleInputOnBlur = () => {
-    redux.setEditing("");
+
+  const handleMenuItemOnRightClick = (props: any) => {
+    setToolboxOpen(true);
+    redux.setRightClickSchema(props);
   };
+
+  const handleMenuInputOnBlur = () => redux.setEditing("");
+
+  const handleMenuOnClick = (item: any) => redux.setCurrentSchema(item);
 
   return (
     <div className="w-full h-full border-r bg-[#282c34] ">
-      <Dialog isOpen={open} />
-
       <div className="overflow-scroll h-[calc(100vh-60px)] border-b pb-2">
         {root && (
           <MenuItem
             item={root}
-            onEnter={handleOnEnter}
-            inputOnBlur={handleInputOnBlur}
+            onEditId={onEditId}
+            currentSchema={currentSchema}
+            onEnter={handleMenuItemOnSubmit}
+            inputOnBlur={handleMenuInputOnBlur}
+            onClick={handleMenuOnClick}
+            onRightClick={handleMenuItemOnRightClick}
           />
         )}
       </div>
-      <div
-        className="absolute"
-        style={{
-          opacity: size(rightClickSchema) ? 1 : 0,
-          top: rightClickSchema?.position?.y,
-          left: rightClickSchema?.position?.x,
-        }}
-      >
+      <div className="absolute" style={toolboxStyle}>
         <ToolBox
           schema={rightClickSchema.schema}
+          open={toolboxOpen}
           onClose={handleOnClose}
-          onClick={handleOnClick}
+          onClick={handleToolboxOnClick}
         />
       </div>
       <a

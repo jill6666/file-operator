@@ -1,18 +1,27 @@
 import { useState } from "react";
 import { ITreeSchema } from "../data/types/interface";
 import size from "lodash/size";
-import redux from "../data/redux";
 import { useSelector } from "react-redux";
 import { controlSelector } from "../data/slice/controlSlice";
 
 interface IMenuItem {
   item: ITreeSchema;
+  currentSchema: ITreeSchema;
+  onEditId: string;
   onEnter?(val?: string): void;
   inputOnBlur?(): void;
+  onClick?(props: any): void;
+  onRightClick?(props: any): void;
 }
-const MenuItem = ({ item, onEnter, inputOnBlur }: IMenuItem) => {
-  const currentSchema = useSelector(controlSelector.currentShema);
-  const onEditId = useSelector(controlSelector.onEditId);
+const MenuItem = ({
+  item,
+  currentSchema,
+  onEditId,
+  onEnter,
+  inputOnBlur,
+  onClick,
+  onRightClick,
+}: IMenuItem) => {
   const [isExpand, setIsExpane] = useState(true);
   const [inputValue, setInputValue] = useState(item?.name || "");
 
@@ -24,16 +33,14 @@ const MenuItem = ({ item, onEnter, inputOnBlur }: IMenuItem) => {
   const handleOnClick = (e: React.MouseEvent, item: ITreeSchema) => {
     e.preventDefault();
     expandable && setIsExpane((prev) => !prev);
-
-    redux.setCurrentSchema(item);
+    onClick && onClick(item);
   };
 
   const handleOnContextMenu = (e: React.MouseEvent, item: ITreeSchema) => {
     e.preventDefault();
 
     const position = { x: e.clientX, y: e.clientY };
-
-    redux.setRightClickSchema({ schema: item, position });
+    onRightClick && onRightClick({ schema: item, position });
   };
 
   const handleInputChange = (e: any) => {
@@ -88,7 +95,15 @@ const MenuItem = ({ item, onEnter, inputOnBlur }: IMenuItem) => {
         <div className="pl-2 divide-y divide-[#555]">
           {item.children.map((i, index) => (
             <div key={i.id + index}>
-              <MenuItem item={i} onEnter={onEnter} inputOnBlur={inputOnBlur} />
+              <MenuItem
+                item={i}
+                currentSchema={currentSchema}
+                onEditId={onEditId}
+                onEnter={onEnter}
+                inputOnBlur={inputOnBlur}
+                onClick={onClick}
+                onRightClick={onRightClick}
+              />
             </div>
           ))}
         </div>

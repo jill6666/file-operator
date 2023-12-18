@@ -3,10 +3,12 @@ import { ACTIONS } from "../data/types/enum";
 import getMenuOptions from "../utils/getMenuOptions";
 
 const ToolBox = ({
+  open,
   schema,
   onClose,
   onClick,
 }: {
+  open?: boolean;
   schema?: ITreeSchema;
   onClose?(): void;
   onClick?(type: ACTIONS): void;
@@ -22,7 +24,7 @@ const ToolBox = ({
     e.preventDefault();
     onClick && onClick(type);
   };
-
+  if (!open) return <></>;
   return (
     <div className="relative text-[#161a21]">
       <div
