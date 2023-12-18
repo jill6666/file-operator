@@ -39,12 +39,11 @@ const PreviewPanel = () => {
         </div>
       )}
       <div className="border-t">
-        {!browserVisible ||
-          (!selected && (
-            <div className="text-lg text-[#555]">
-              The file extension is not supported.
-            </div>
-          ))}
+        {!browserVisible && selected && (
+          <div className="text-lg text-[#888] pt-4 h-full">
+            The file extension is not supported.
+          </div>
+        )}
         {browserVisible && (
           <div className="text-left">
             <Highlight className="javascript h-full">{fileContent}</Highlight>
