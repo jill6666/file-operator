@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFileSchema from "../hook/useFileSchema";
 import MenuItem from "../components/MenuItem";
 import ToolBox from "../components/ToolBox";
@@ -9,9 +9,11 @@ import size from "lodash/size";
 import { ACTIONS, FILE_TYPE } from "../data/types/enum";
 import { GITHUB_INFO } from "../constants";
 import { v4 as uuidv4 } from "uuid";
+import Dialog from "../components/Dialog";
 
 const MenuPanel = () => {
   const [editType, setEdit] = useState<ACTIONS>();
+  const [open, setOpen] = useState(false);
   const currentSchema = useSelector(controlSelector.currentShema);
   const rightClickSchema = useSelector(controlSelector.rightClickSchema);
   const {
@@ -29,6 +31,11 @@ const MenuPanel = () => {
   const handleOnClose = () => {
     redux.setRightClickSchema({});
   };
+
+  useEffect(() => {
+    console.log("currentSchema.id", id);
+    console.log("rightClickSchema.id", rightClickSchema.schema?.id);
+  }, [id, rightClickSchema.schema]);
 
   // toolbox item onClick & input onKeydown callback
   const actionMp = {
@@ -95,6 +102,8 @@ const MenuPanel = () => {
 
   return (
     <div className="w-full h-full border-r bg-[#282c34] ">
+      <Dialog isOpen={open} />
+
       <div className="overflow-scroll h-[calc(100vh-60px)] border-b pb-2">
         {root && (
           <MenuItem
