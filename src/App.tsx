@@ -9,12 +9,11 @@ function App() {
   const { initSchema, searchResource, clearSearchResult } = useFileSchema();
 
   useEffect(() => {
-    // init folder
     initSchema();
   }, []);
 
   const handleOnKeyDown = (e: any) => searchResource(e);
-  const handleOnClear = (e: any) => clearSearchResult();
+  const handleOnClear = () => clearSearchResult();
 
   return (
     <div className="App flex w-full h-screen">

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { ITreeSchema } from "../data/types/interface";
 import size from "lodash/size";
-import { useSelector } from "react-redux";
-import { controlSelector } from "../data/slice/controlSlice";
 
 interface IMenuItem {
   item: ITreeSchema;
@@ -66,11 +64,8 @@ const MenuItem = ({
           <div className="flex space-x-2">
             {Boolean(expandable) && (
               <div className="text-sm">
-                {!isExpand ? (
-                  <i className="ri-arrow-right-s-line"></i>
-                ) : (
-                  <i className="ri-arrow-down-s-line"></i>
-                )}
+                {!isExpand && <i className="ri-arrow-right-s-line"></i>}
+                {isExpand && <i className="ri-arrow-down-s-line"></i>}
               </div>
             )}
             <div style={{ fontWeight: isActive ? "700" : "300" }}>

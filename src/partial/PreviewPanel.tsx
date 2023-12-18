@@ -10,6 +10,7 @@ const PreviewPanel = () => {
   const [fileContent, setFileContent] = useState<any>();
   const [browserVisible, setBrowserVisible] = useState(false);
   const currentSchema = useSelector(controlSelector.currentShema);
+  const selected = Boolean(size(currentSchema));
 
   useEffect(() => {
     const isFile = !currentSchema?.children;
@@ -31,23 +32,22 @@ const PreviewPanel = () => {
     return storedData;
   };
   return (
-    <div className="w-full h-[calc(100%-60px)] overflow-scroll">
-      {!Boolean(size(currentSchema)) && (
+    <div className="w-full h-[calc(100%-60px)] overflow-scroll bg-[#2b2b2b]">
+      {!selected && (
         <div className="w-full h-full flex justify-center items-center">
-          <img src={logo} className="App-logo" alt="react logo" />
+          <img src={logo} className="App-logo opacity-[.3]" alt="react logo" />
         </div>
       )}
-      <div className="p-2 border-t">
-        {!browserVisible && (
-          <div className="text-lg text-[#555]">
-            The file extension is not supported.
-          </div>
-        )}
+      <div className="border-t">
+        {!browserVisible ||
+          (!selected && (
+            <div className="text-lg text-[#555]">
+              The file extension is not supported.
+            </div>
+          ))}
         {browserVisible && (
           <div className="text-left">
-            <Highlight className="javascript h-full">
-              {fileContent}
-            </Highlight>
+            <Highlight className="javascript h-full">{fileContent}</Highlight>
           </div>
         )}
       </div>

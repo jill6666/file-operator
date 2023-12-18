@@ -37,6 +37,6 @@ export const FILE_ACTIONS = [
 
 export const GITHUB_INFO = {
   icon: "ri-github-fill",
-  url: "https://github.com/jill6666",
+  url: "https://github.com/jill6666/file-operator",
   title: "Source code on Github",
 };
