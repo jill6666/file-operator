@@ -18,7 +18,6 @@ import cloneDeep from "lodash/cloneDeep";
 import { FILE_TYPE } from "../data/types/enum";
 import renewSchemaId from "../utils/renewSchemaId";
 import clearNoParentItem from "../utils/clearNoParentItem";
-import { controlSelector } from "../data/slice/controlSlice";
 
 interface ICheckIsNotDuplicate {
   filename: string;
@@ -27,7 +26,6 @@ interface ICheckIsNotDuplicate {
 
 const useFileSchema = () => {
   const schema = useSelector(folderSelector.schema);
-  const onEditId = useSelector(controlSelector.onEditId);
   const treeMap = refineDataToTree(schema);
 
   const initSchema = () => {
@@ -65,16 +63,21 @@ const useFileSchema = () => {
     redux.create(schema);
   };
 
-  const createResource = ({ filename, parentId, type }: ICreateResource) => {
+  const createResource = ({
+    id,
+    filename,
+    parentId,
+    type,
+  }: ICreateResource) => {
     const isValid = checkIsNotDuplicate({ filename, parentId });
     if (!isValid) return alert("Duplicate name in a folder, please rename.");
 
     switch (type) {
       case FILE_TYPE.Folder:
-        newFolder(onEditId, filename, parentId);
+        newFolder(id, filename, parentId);
         break;
       case FILE_TYPE.File:
-        newFile(onEditId, filename, parentId);
+        newFile(id, filename, parentId);
         break;
       default:
         break;

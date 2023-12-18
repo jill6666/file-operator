@@ -30,6 +30,7 @@ export interface ISchema {
 }
 
 export interface ICreateResource {
+  id: string;
   filename: string;
   parentId: string;
   type: FILE_TYPE;

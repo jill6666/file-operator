@@ -1,23 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useFileSchema from "../hook/useFileSchema";
 import MenuItem from "../components/MenuItem";
 import ToolBox from "../components/ToolBox";
 import { useSelector } from "react-redux";
 import { controlSelector } from "../data/slice/controlSlice";
 import redux from "../data/redux";
-import size from "lodash/size";
 import { ACTIONS, FILE_TYPE } from "../data/types/enum";
 import { GITHUB_INFO } from "../constants";
 import { v4 as uuidv4 } from "uuid";
 
 const MenuPanel = () => {
-  const [editType, setEdit] = useState<ACTIONS>();
   const [toolboxOpen, setToolboxOpen] = useState(false);
   const [targetSchema, setTargetSchema] = useState<any>();
+  const [editing, setEditing] = useState<{ id?: string; type?: ACTIONS }>();
   const [toolboxPosition, setToolboxPosition] = useState({ x: 0, y: 0 });
-
   const currentSchema = useSelector(controlSelector.currentShema);
-  const onEditId = useSelector(controlSelector.onEditId);
   const {
     treeMap,
     renameResource,
@@ -29,71 +26,22 @@ const MenuPanel = () => {
   } = useFileSchema();
 
   const root = treeMap?.[0];
-  const id = currentSchema?.id;
   const toolboxStyle = {
     opacity: toolboxOpen ? 1 : 0,
     top: toolboxPosition.y,
     left: toolboxPosition.x,
   };
 
-  const actionMp = {
-    [ACTIONS.CreateFile]: {
-      onClick: () => {
-        setEdit(ACTIONS.CreateFile);
-
-        const newId = uuidv4();
-        redux.create({ id: newId, parentId: targetSchema?.id });
-        redux.setEditing(newId);
-      },
-      inputOnSubmit: (val: any) =>
-        createResource({
-          filename: val,
-          parentId: targetSchema?.id,
-          type: FILE_TYPE.File,
-        }),
-    },
-    [ACTIONS.CreateFolder]: {
-      onClick: () => {
-        setEdit(ACTIONS.CreateFolder);
-
-        const newId = uuidv4();
-        redux.create({ id: newId, parentId: targetSchema?.id });
-        redux.setEditing(newId);
-      },
-      inputOnSubmit: (val: any) =>
-        createResource({
-          filename: val,
-          parentId: targetSchema?.id,
-          type: FILE_TYPE.Folder,
-        }),
-    },
-    [ACTIONS.Edit]: {
-      onClick: () => {
-        setEdit(ACTIONS.Edit);
-        redux.setCurrentSchema(targetSchema);
-        redux.setEditing(targetSchema.id);
-      },
-      inputOnSubmit: (val: any) => renameResource({ id, name: val }),
-    },
-    [ACTIONS.Delete]: {
-      onClick: () => deleteResource({ id: targetSchema.id }),
-    },
-    [ACTIONS.Copy]: { onClick: () => copyResource(targetSchema) },
-    [ACTIONS.Paste]: { onClick: () => pasteResource(targetSchema) },
-    [ACTIONS.Cut]: { onClick: () => cutResource(targetSchema) },
-  };
-
   const handleToolboxOnClick = (type: ACTIONS) => {
-    actionMp?.[type]?.onClick();
+    TYPES_ACTION_MP?.[type]?.onClick();
     setToolboxOpen(false);
   };
 
   const handleToolboxOnClose = () => setToolboxOpen(false);
 
   const handleMenuItemOnSubmit = (value: string) => {
-    // @ts-ignore
-    editType && actionMp?.[editType]?.inputOnSubmit(value);
-    redux.setEditing("");
+    editing?.type && TYPES_ACTION_MP?.[editing?.type]?.inputOnSubmit?.(value);
+    setEditing(undefined);
   };
 
   const handleMenuItemOnRightClick = (props: any) => {
@@ -102,9 +50,66 @@ const MenuPanel = () => {
     setToolboxPosition(props?.position);
   };
 
-  const handleMenuInputOnBlur = () => redux.setEditing("");
+  const handleMenuInputOnBlur = () => setEditing(undefined);
 
   const handleMenuOnClick = (item: any) => redux.setCurrentSchema(item);
+
+  const TYPES_ACTION_MP = {
+    [ACTIONS.CreateFile]: {
+      onClick: () => {
+        const newId = uuidv4();
+        redux.create({ id: newId, parentId: targetSchema?.id });
+        setEditing({ id: newId, type: ACTIONS.CreateFile });
+      },
+      inputOnSubmit: (val: any) =>
+        editing?.id &&
+        createResource({
+          id: editing.id,
+          filename: val,
+          parentId: targetSchema?.id,
+          type: FILE_TYPE.File,
+        }),
+    },
+    [ACTIONS.CreateFolder]: {
+      onClick: () => {
+        const newId = uuidv4();
+        redux.create({ id: newId, parentId: targetSchema?.id });
+        setEditing({ id: newId, type: ACTIONS.CreateFolder });
+      },
+      inputOnSubmit: (val: any) =>
+        editing?.id &&
+        createResource({
+          id: editing.id,
+          filename: val,
+          parentId: targetSchema?.id,
+          type: FILE_TYPE.Folder,
+        }),
+    },
+    [ACTIONS.Edit]: {
+      onClick: () => {
+        redux.setCurrentSchema(targetSchema);
+        setEditing({ id: targetSchema.id, type: ACTIONS.Edit });
+      },
+      inputOnSubmit: (val: any) =>
+        renameResource({ id: targetSchema.id, name: val }),
+    },
+    [ACTIONS.Delete]: {
+      onClick: () => deleteResource({ id: targetSchema.id }),
+      inputOnSubmit: () => {},
+    },
+    [ACTIONS.Copy]: {
+      onClick: () => copyResource(targetSchema),
+      inputOnSubmit: () => {},
+    },
+    [ACTIONS.Paste]: {
+      onClick: () => pasteResource(targetSchema),
+      inputOnSubmit: () => {},
+    },
+    [ACTIONS.Cut]: {
+      onClick: () => cutResource(targetSchema),
+      inputOnSubmit: () => {},
+    },
+  };
 
   return (
     <div className="w-full h-full border-r bg-[#282c34] ">
@@ -112,7 +117,7 @@ const MenuPanel = () => {
         {root && (
           <MenuItem
             item={root}
-            onEditId={onEditId}
+            onEditId={editing?.id || ""}
             currentSchema={currentSchema}
             onEnter={handleMenuItemOnSubmit}
             inputOnBlur={handleMenuInputOnBlur}
