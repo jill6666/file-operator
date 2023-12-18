@@ -13,9 +13,10 @@ import { v4 as uuidv4 } from "uuid";
 const MenuPanel = () => {
   const [editType, setEdit] = useState<ACTIONS>();
   const [toolboxOpen, setToolboxOpen] = useState(false);
+  const [targetSchema, setTargetSchema] = useState<any>();
+  const [toolboxPosition, setToolboxPosition] = useState({ x: 0, y: 0 });
 
   const currentSchema = useSelector(controlSelector.currentShema);
-  const rightClickSchema = useSelector(controlSelector.rightClickSchema);
   const onEditId = useSelector(controlSelector.onEditId);
   const {
     treeMap,
@@ -29,35 +30,25 @@ const MenuPanel = () => {
 
   const root = treeMap?.[0];
   const id = currentSchema?.id;
-  const handleOnClose = () => {
-    redux.setRightClickSchema({});
-  };
   const toolboxStyle = {
-    opacity: size(rightClickSchema) ? 1 : 0,
-    top: rightClickSchema?.position?.y,
-    left: rightClickSchema?.position?.x,
+    opacity: toolboxOpen ? 1 : 0,
+    top: toolboxPosition.y,
+    left: toolboxPosition.x,
   };
 
-  useEffect(() => {
-    console.log("currentSchema.id", id);
-    console.log("rightClickSchema.id", rightClickSchema.schema?.id);
-  }, [id, rightClickSchema.schema]);
-
-  // toolbox item onClick & input onKeydown callback
   const actionMp = {
     [ACTIONS.CreateFile]: {
       onClick: () => {
         setEdit(ACTIONS.CreateFile);
 
         const newId = uuidv4();
-        redux.create({ id: newId, parentId: rightClickSchema.schema?.id });
+        redux.create({ id: newId, parentId: targetSchema?.id });
         redux.setEditing(newId);
       },
-      callback: (val: any) =>
-        currentSchema.parentId &&
+      inputOnSubmit: (val: any) =>
         createResource({
           filename: val,
-          parentId: currentSchema.parentId,
+          parentId: targetSchema?.id,
           type: FILE_TYPE.File,
         }),
     },
@@ -66,48 +57,49 @@ const MenuPanel = () => {
         setEdit(ACTIONS.CreateFolder);
 
         const newId = uuidv4();
-        redux.create({ id: newId, parentId: rightClickSchema.schema?.id });
+        redux.create({ id: newId, parentId: targetSchema?.id });
         redux.setEditing(newId);
       },
-      callback: (val: any) =>
-        currentSchema.parentId &&
+      inputOnSubmit: (val: any) =>
         createResource({
           filename: val,
-          parentId: currentSchema.parentId,
+          parentId: targetSchema?.id,
           type: FILE_TYPE.Folder,
         }),
     },
     [ACTIONS.Edit]: {
       onClick: () => {
         setEdit(ACTIONS.Edit);
-        redux.setCurrentSchema(rightClickSchema.schema);
-        redux.setEditing(rightClickSchema.schema.id);
+        redux.setCurrentSchema(targetSchema);
+        redux.setEditing(targetSchema.id);
       },
-      callback: (val: any) => renameResource({ id, name: val }),
+      inputOnSubmit: (val: any) => renameResource({ id, name: val }),
     },
     [ACTIONS.Delete]: {
-      onClick: () => deleteResource({ id: rightClickSchema.schema.id }),
+      onClick: () => deleteResource({ id: targetSchema.id }),
     },
-    [ACTIONS.Copy]: { onClick: () => copyResource(rightClickSchema.schema) },
-    [ACTIONS.Paste]: { onClick: () => pasteResource(rightClickSchema.schema) },
-    [ACTIONS.Cut]: { onClick: () => cutResource(rightClickSchema.schema) },
+    [ACTIONS.Copy]: { onClick: () => copyResource(targetSchema) },
+    [ACTIONS.Paste]: { onClick: () => pasteResource(targetSchema) },
+    [ACTIONS.Cut]: { onClick: () => cutResource(targetSchema) },
   };
 
-  // handle toolbox item onclick
   const handleToolboxOnClick = (type: ACTIONS) => {
     actionMp?.[type]?.onClick();
     setToolboxOpen(false);
   };
 
+  const handleToolboxOnClose = () => setToolboxOpen(false);
+
   const handleMenuItemOnSubmit = (value: string) => {
     // @ts-ignore
-    editType && actionMp?.[editType]?.callback(value);
+    editType && actionMp?.[editType]?.inputOnSubmit(value);
     redux.setEditing("");
   };
 
   const handleMenuItemOnRightClick = (props: any) => {
     setToolboxOpen(true);
-    redux.setRightClickSchema(props);
+    setTargetSchema(props?.schema);
+    setToolboxPosition(props?.position);
   };
 
   const handleMenuInputOnBlur = () => redux.setEditing("");
@@ -129,11 +121,11 @@ const MenuPanel = () => {
           />
         )}
       </div>
-      <div className="absolute" style={toolboxStyle}>
+      <div className="absolute z-40" style={toolboxStyle}>
         <ToolBox
-          schema={rightClickSchema.schema}
+          schema={targetSchema}
           open={toolboxOpen}
-          onClose={handleOnClose}
+          onClose={handleToolboxOnClose}
           onClick={handleToolboxOnClick}
         />
       </div>
