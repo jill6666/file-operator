@@ -18,7 +18,7 @@ const PreviewPanel = () => {
     const visibility = currentSchema?.browserVisible;
     const data = store.get(currentSchema.id);
 
-    if (!isFile || !visibility || !data) return;
+    if (!isFile || !visibility || !data) setFileContent(undefined);
 
     // @ts-ignore
     const isJson = currentSchema?.extension === ".json";
