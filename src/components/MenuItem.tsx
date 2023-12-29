@@ -54,7 +54,7 @@ const MenuItem = ({
     inputOnBlur && inputOnBlur();
   };
   return (
-    <div className="text-left pl-2 divide-y divide-[#555] w-full cursor-pointer">
+    <div className="text-left pl-2 divide-y divide-primary-main w-full cursor-pointer">
       <div
         className="px-4 py-2"
         onClick={(e) => handleOnClick(e, item)}
@@ -79,15 +79,14 @@ const MenuItem = ({
             onBlur={handleOnBlur}
             value={inputValue}
             autoFocus={true}
-            className="bg-transparent focus:outline-none p-0 m-0"
-            style={{ color: "#61dafb" }}
+            className="bg-transparent focus:outline-none p-0 m-0 text-blue"
             onChange={handleInputChange}
             onKeyDown={handleOnKeyDown}
           />
         )}
       </div>
       {isExpand && item.children && (
-        <div className="pl-2 divide-y divide-[#555]">
+        <div className="pl-2 divide-y divide-primary-main">
           {item.children.map((i, index) => (
             <div key={i.id + index}>
               <MenuItem

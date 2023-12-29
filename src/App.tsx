@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import "./App.css";
 import useFileSchema from "./hook/useFileSchema";
 import MenuPanel from "./partial/MenuPanel";
 import PreviewPanel from "./partial/PreviewPanel";
@@ -16,7 +15,7 @@ function App() {
   const handleOnClear = () => clearSearchResult();
 
   return (
-    <div className="App flex w-full h-screen">
+    <div className="flex w-full h-screen text-white">
       <div className="w-[20%] h-full min-w-[250px]">
         <MenuPanel />
       </div>

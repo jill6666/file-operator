@@ -16,7 +16,7 @@ const PreviewPanel = () => {
     const isFile = !currentSchema?.children;
     //@ts-ignore
     const visibility = currentSchema?.browserVisible;
-    const data = getFileContent(currentSchema.id);
+    const data = store.get(currentSchema.id);
 
     if (!isFile || !visibility || !data) return;
 
@@ -28,13 +28,8 @@ const PreviewPanel = () => {
     setFileContent(fileData);
   }, [currentSchema]);
 
-  const getFileContent = (id: string) => {
-    const storedData = store.get(id);
-
-    return storedData;
-  };
   return (
-    <div className="w-full h-[calc(100%-60px)] overflow-scroll bg-[#2b2b2b]">
+    <div className="w-full h-[calc(100%-60px)] overflow-scroll bg-primary-dark">
       {!selected && (
         <div className="w-full h-full flex justify-center items-center">
           <img src={logo} className="App-logo opacity-[.3]" alt="react logo" />
@@ -42,7 +37,7 @@ const PreviewPanel = () => {
       )}
       <div className="border-t">
         {!browserVisible && selected && (
-          <div className="text-lg text-[#888] pt-4 h-full">
+          <div className="text-lg text-primary-light pt-4 h-full">
             The file extension is not supported.
           </div>
         )}

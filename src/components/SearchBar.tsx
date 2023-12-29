@@ -116,8 +116,8 @@ const SearchBar = ({ placeholder, onKeyDown, onClear }: ISearchBar) => {
       />
 
       {Boolean(size(searchResult)) && (
-        <div className="w-full bg-[#282c34] absolute top-[60px] border border-white z-40 rounded-sm text-base">
-          <ul className="py-2 px-4 text-left divide-y divide-[#555]">
+        <div className="w-full bg-primary-dark absolute top-[60px] border border-white z-40 rounded-sm text-base">
+          <ul className="py-2 px-4 text-left divide-y divide-primary-main">
             {searchResult.map((option) => (
               <li
                 key={option?.label}

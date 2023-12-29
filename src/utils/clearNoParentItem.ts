@@ -3,9 +3,7 @@ import { ISchema } from "@data/types/interface";
 const clearNoParentItem = (schema: ISchema[], targetId: string) => {
   const tmpMap = new Map();
 
-  schema.forEach((i) => {
-    if (i.id !== targetId) tmpMap.set(i.id, i);
-  });
+  schema.forEach((i) => i.id !== targetId && tmpMap.set(i.id, i));
 
   let result: any = [];
 
