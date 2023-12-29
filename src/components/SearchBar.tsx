@@ -115,10 +115,13 @@ const SearchBar = ({ placeholder, onKeyDown, onClear }: ISearchBar) => {
         onKeyDown={handleOnKeyDown}
       />
 
-      {Boolean(size(searchResult)) && (
-        <div className="w-full bg-primary-dark absolute top-[60px] border border-white z-40 rounded-sm text-base">
-          <ul className="py-2 px-4 text-left divide-y divide-primary-main">
-            {searchResult.map((option) => (
+      <dialog
+        open={Boolean(size(searchResult))}
+        className="w-full bg-primary-dark text-white absolute top-[60px] border border-white z-40 rounded-sm text-base"
+      >
+        <ul className="py-2 px-4 text-left divide-y divide-primary-main">
+          {Boolean(size(searchResult)) &&
+            searchResult.map((option) => (
               <li
                 key={option?.label}
                 className="py-2 cursor-pointer"
@@ -127,9 +130,8 @@ const SearchBar = ({ placeholder, onKeyDown, onClear }: ISearchBar) => {
                 {option?.label}
               </li>
             ))}
-          </ul>
-        </div>
-      )}
+        </ul>
+      </dialog>
     </div>
   );
 };

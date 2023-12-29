@@ -24,9 +24,9 @@ const ToolBox = ({
     e.preventDefault();
     onClick && onClick(type);
   };
-  if (!open) return <></>;
+
   return (
-    <div className="relative text-primary-dark">
+    <dialog open={open} className="relative text-primary-dark">
       <div
         className="absolute right-[-15px] top-[-15px] w-6 h-6 bg-white border text-center items-center rounded-[5rem] cursor-pointer text-sm"
         onClick={handleOnClose}
@@ -44,7 +44,7 @@ const ToolBox = ({
           </div>
         ))}
       </div>
-    </div>
+    </dialog>
   );
 };
 
