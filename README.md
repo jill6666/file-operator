@@ -45,3 +45,12 @@ yarn start
         image below).
 
 # Tech stack
+- [React](https://reactjs.org/): React is a JavaScript library for building user interfaces.
+- [typescript](https://www.typescriptlang.org/): TypeScript is a language for application scale JavaScript development
+- [redux](http://redux.js.org): Predictable state container for JavaScript apps
+- [@reduxjs/toolkit](https://redux-toolkit.js.org): The official, opinionated, batteries-included toolset for efficient Redux development
+- [store2](https://github.com/nbubna/store#readme): Better localStorage
+- [uuid](https://github.com/uuidjs/uuid#readme): RFC4122 (v1, v4, and v5) UUIDs
+- [react-highlight](https://github.com/akiran/react-highlight): React component for syntax highlighting
+- [tailwindcss](https://tailwindcss.com): A utility-first CSS framework for rapidly building custom user interfaces.
+- [remixicon](https://remixicon.com): Remix Icon is a set of open source neutral style system symbols elaborately crafted for designers and developers. All of the icons are free to use for both personal and commercial.
