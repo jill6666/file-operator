@@ -5,12 +5,17 @@ import logo from "../logo.svg";
 import size from "lodash/size";
 import store from "store2";
 import Highlight from "react-highlight";
+import BreadCrumbs from "../components/BreadCurmb";
+import useFileSchema from "../hook/useFileSchema";
+import getBreadCrumbs from "../utils/getBreadCrumbs";
 
 const PreviewPanel = () => {
   const [fileContent, setFileContent] = useState<any>();
   const [browserVisible, setBrowserVisible] = useState(false);
   const currentSchema = useSelector(controlSelector.currentShema);
+  const { treeMap } = useFileSchema();
   const selected = Boolean(size(currentSchema));
+  const breadCrumbsData = getBreadCrumbs({ treeMap, currentSchema });
 
   useEffect(() => {
     const isFile = !currentSchema?.children;
@@ -36,6 +41,7 @@ const PreviewPanel = () => {
         </div>
       )}
       <div className="border-t">
+        <BreadCrumbs data={breadCrumbsData} />
         {!browserVisible && selected && (
           <div className="text-lg text-primary-light pt-4 h-full">
             The file extension is not supported.
