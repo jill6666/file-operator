@@ -6,7 +6,7 @@ import {
 } from "../constants";
 
 const getMenuOptions = (schema: ITreeSchema) => {
-  const isRoot = schema?.id === "root";
+  const isRoot = !schema?.parentId;
   const isFolder = Boolean(schema?.children);
 
   if (isRoot) return ROOT_FOLDER_ACTIONS;
