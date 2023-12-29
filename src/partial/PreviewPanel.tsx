@@ -14,16 +14,18 @@ const PreviewPanel = () => {
 
   useEffect(() => {
     const isFile = !currentSchema?.children;
-    if (!isFile) return;
     //@ts-ignore
     const visibility = currentSchema?.browserVisible;
-    setBrowserVisible(visibility);
+    const data = getFileContent(currentSchema.id);
 
-    const data = visibility && getFileContent(currentSchema.id);
+    if (!isFile || !visibility || !data) return;
+
     // @ts-ignore
     const isJson = currentSchema?.extension === ".json";
     const fileData = isJson ? JSON.stringify(data, null, 4) : data;
-    data && setFileContent(fileData);
+
+    setBrowserVisible(visibility);
+    setFileContent(fileData);
   }, [currentSchema]);
 
   const getFileContent = (id: string) => {

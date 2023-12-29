@@ -15,15 +15,9 @@ const MenuPanel = () => {
   const [editing, setEditing] = useState<{ id?: string; type?: ACTIONS }>();
   const [toolboxPosition, setToolboxPosition] = useState({ x: 0, y: 0 });
   const currentSchema = useSelector(controlSelector.currentShema);
-  const {
-    treeMap,
-    renameResource,
-    deleteResource,
-    createResource,
-    copyResource,
-    pasteResource,
-    cutResource,
-  } = useFileSchema();
+
+  const { treeMap, renameResource, deleteResource, ...res } = useFileSchema();
+  const { copyResource, pasteResource, cutResource, createResource } = res;
 
   const root = treeMap?.[0];
   const toolboxStyle = {
@@ -54,44 +48,57 @@ const MenuPanel = () => {
 
   const handleMenuOnClick = (item: any) => redux.setCurrentSchema(item);
 
+  const createFileOnClick = () => {
+    const newId = uuidv4();
+    redux.create({ id: newId, parentId: targetSchema?.id });
+    setEditing({ id: newId, type: ACTIONS.CreateFile });
+  };
+
+  const createFolderOnClick = () => {
+    const newId = uuidv4();
+    redux.create({ id: newId, parentId: targetSchema?.id });
+    setEditing({ id: newId, type: ACTIONS.CreateFolder });
+  };
+
+  const renameOnClick = () => {
+    redux.setCurrentSchema(targetSchema);
+    setEditing({ id: targetSchema.id, type: ACTIONS.Edit });
+  };
+  const renameOnSubmit = (val: string) =>
+    renameResource({ id: targetSchema.id, name: val });
+
+  const createFolderOnSubmit = (val: string) => {
+    editing?.id &&
+      createResource({
+        id: editing.id,
+        filename: val,
+        parentId: targetSchema?.id,
+        type: FILE_TYPE.Folder,
+      });
+  };
+
+  const createFileOnSubmit = (val: string) => {
+    editing?.id &&
+      createResource({
+        id: editing.id,
+        filename: val,
+        parentId: targetSchema?.id,
+        type: FILE_TYPE.File,
+      });
+  };
+
   const TYPES_ACTION_MP = {
     [ACTIONS.CreateFile]: {
-      onClick: () => {
-        const newId = uuidv4();
-        redux.create({ id: newId, parentId: targetSchema?.id });
-        setEditing({ id: newId, type: ACTIONS.CreateFile });
-      },
-      inputOnSubmit: (val: any) =>
-        editing?.id &&
-        createResource({
-          id: editing.id,
-          filename: val,
-          parentId: targetSchema?.id,
-          type: FILE_TYPE.File,
-        }),
+      onClick: createFileOnClick,
+      inputOnSubmit: createFileOnSubmit,
     },
     [ACTIONS.CreateFolder]: {
-      onClick: () => {
-        const newId = uuidv4();
-        redux.create({ id: newId, parentId: targetSchema?.id });
-        setEditing({ id: newId, type: ACTIONS.CreateFolder });
-      },
-      inputOnSubmit: (val: any) =>
-        editing?.id &&
-        createResource({
-          id: editing.id,
-          filename: val,
-          parentId: targetSchema?.id,
-          type: FILE_TYPE.Folder,
-        }),
+      onClick: createFolderOnClick,
+      inputOnSubmit: createFolderOnSubmit,
     },
     [ACTIONS.Edit]: {
-      onClick: () => {
-        redux.setCurrentSchema(targetSchema);
-        setEditing({ id: targetSchema.id, type: ACTIONS.Edit });
-      },
-      inputOnSubmit: (val: any) =>
-        renameResource({ id: targetSchema.id, name: val }),
+      onClick: renameOnClick,
+      inputOnSubmit: renameOnSubmit,
     },
     [ACTIONS.Delete]: {
       onClick: () => deleteResource({ id: targetSchema.id }),

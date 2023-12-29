@@ -161,9 +161,7 @@ const useFileSchema = () => {
     redux.setSearchResult(resultOptions);
   };
 
-  const clearSearchResult = () => {
-    redux.setSearchResult();
-  };
+  const clearSearchResult = () => redux.setSearchResult();
 
   return {
     treeMap,
